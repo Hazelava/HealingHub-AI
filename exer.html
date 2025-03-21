@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Teasers - Healing Hub</title>
+    <style>
+        /* Global Styles */
+        :root {
+            --primary: #8a6fb0; /* Mauve */
+            --secondary: #b19cd9; /* Lighter mauve */
+            --accent: #e6e0f0; /* Very light mauve */
+            --dark: #4a3b64; /* Dark mauve */
+            --text: #333333;
+            --light-text: #ffffff;
+            --transition: all 0.3s ease-in-out;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Elements */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            filter: blur(8px);
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-100px) translateX(100px) rotate(180deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(0) translateX(0) rotate(360deg);
+                opacity: 0.3;
+            }
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 0.8rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .menu-items {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .menu-items li a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: var(--transition);
+        }
+
+        .menu-items li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .menu-items li a:hover {
+            color: var(--primary);
+        }
+
+        .menu-items li a:hover::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* Content Section Styles */
+        .content-section {
+            min-height: 75vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 2rem;
+            position: relative;
+        }
+
+        .section-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 1000px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            margin: 0.5rem auto;
+            border-radius: 2px;
+        }
+
+        .section-description {
+            color: var(--text);
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .game-card {
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: var(--text);
+            height: 100%;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .game-icon {
+            font-size: 3rem;
+            padding: 1.5rem;
+            background-color: var(--accent);
+            color: var(--dark);
+        }
+
+        .game-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .game-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .game-description {
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .play-button {
+            background-color: var(--primary);
+            color: var(--light-text);
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-block;
+            transition: var(--transition);
+            text-decoration: none;
+            margin-top: auto;
+            border: none;
+            cursor: pointer;
+        }
+
+        .play-button:hover {
+            background-color: var(--dark);
+            transform: scale(1.05);
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: var(--dark);
+            color: var(--light-text);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .quote {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--light-text);
+            text-decoration: underline;
+        }
+
+        .copyright {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .menu-items {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: rgba(255, 255, 255, 0.95);
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .menu-items.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .section-container {
+                padding: 2rem 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation Elements -->
+    <div class="bg-animation" id="bgAnimation"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="logo">Healing<span>Hub</span></a>
+        <div class="menu-toggle" id="menuToggle">
+            <i>☰</i>
+        </div>
+        <ul class="menu-items" id="menuItems">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="user-details.html">User Details</a></li>
+            <li><a href="insights.html">Personalized Insights</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Section -->
+    <section class="content-section">
+        <div class="section-container">
+            <h1 class="section-title">Brain Teasers</h1>
+            <p class="section-description">
+                Challenge your mind and boost your cognitive abilities with these entertaining brain teasers and puzzles. Each game offers a unique mental workout to keep your brain sharp and engaged.
+            </p>
+
+            <div class="games-grid">
+                <!-- Riddles Game Card -->
+                <a href="riddle.html" class="game-card">
+                    <div class="game-icon">🧩</div>
+                    <div class="game-content">
+                        <h3 class="game-title">Riddles</h3>
+                        <p class="game-description">Solve mind-bending riddles that will test your logical thinking and creativity.</p>
+                        <button class="play-button">Start Playing</button>
+                    </div>
+                </a>
+
+                <!-- Puzzles Game Card -->
+                <a href="puzzle1.html" class="game-card">
+                    <div class="game-icon">🧠</div>
+                    <div class="game-content">
+                        <h3 class="game-title">Puzzles</h3>
+                        <p class="game-description">Challenge yourself with a variety of puzzles designed to exercise different parts of your brain.</p>
+                        <button class="play-button">Start Playing</button>
+                    </div>
+                </a>
+
+                <!-- Guessing Game Card -->
+                <a href="guess.html" class="game-card">
+                    <div class="game-icon">🎯</div>
+                    <div class="game-content">
+                        <h3 class="game-title">Guessing Games</h3>
+                        <p class="game-description">Test your intuition and knowledge with these fun guessing challenges.</p>
+                        <button class="play-button">Start Playing</button>
+                    </div>
+                </a>
+
+                <!-- Tic Tac Toe Game Card -->
+                <a href="tic-tac-toe.html" class="game-card">
+                    <div class="game-icon">⭕</div>
+                    <div class="game-content">
+                        <h3 class="game-title">Tic Tac Toe</h3>
+                        <p class="game-description">Play the classic game of X's and O's against a challenging AI opponent.</p>
+                        <button class="play-button">Start Playing</button>
+                    </div>
+                </a>
+
+                <!-- Sudoku Game Card -->
+                <a href="sudo.html" class="game-card">
+                    <div class="game-icon">🔢</div>
+                    <div class="game-content">
+                        <h3 class="game-title">Sudoku</h3>
+                        <p class="game-description">Fill the grid with numbers in this popular logic-based number placement puzzle.</p>
+                        <button class="play-button">Start Playing</button>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p class="quote">"The mind is not a vessel to be filled, but a fire to be kindled." — Plutarch</p>
+        <div class="footer-links">
+            <a href="#">About Us</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Contact</a>
+            <a href="#">Support</a>
+        </div>
+        <p class="copyright">© 2025 Healing Hub. All Rights Reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Create floating background circles
+        const bgAnimation = document.getElementById('bgAnimation');
+        const colors = ['rgba(138, 111, 176, 0.2)', 'rgba(177, 156, 217, 0.2)', 'rgba(230, 224, 240, 0.2)'];
+        
+        for (let i = 0; i < 15; i++) {
+            const circle = document.createElement('div');
+            circle.classList.add('floating-circle');
+            
+            // Random properties
+            const size = Math.random() * 200 + 50;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Set style
+            circle.style.width = `${size}px`;
+            circle.style.height = `${size}px`;
+            circle.style.background = color;
+            circle.style.left = `${Math.random() * 100}%`;
+            circle.style.top = `${Math.random() * 100}%`;
+            circle.style.animationDelay = `${Math.random() * 5}s`;
+            circle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+            
+            bgAnimation.appendChild(circle);
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const menuItems = document.getElementById('menuItems');
+        
+        menuToggle.addEventListener('click', function() {
+            menuItems.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.navbar')) {
+                menuItems.classList.remove('active');
+            }
+        });
+
+        // Game card hover effects
+        const gameCards = document.querySelectorAll('.game-card');
+        
+        gameCards.forEach(card => {
+            card.addEventListener('mouseover', function() {
+                card.style.transition = 'all 0.3s ease-in-out';
+            });
+        });
+    </script>
+</body>
+</html>

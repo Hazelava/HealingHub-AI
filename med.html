@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Journey</title>
+    <style>
+        :root {
+            --primary: #483D8B; /* Dark purple */
+            --secondary: #4169E1; /* Royal blue */
+            --light-purple: #E6E6FA;
+            --white: #FFFFFF;
+            --dark: #332D5E; /* Darker purple */
+            --medium-purple: #7B68EE;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--light-purple);
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease;
+        }
+        
+        .btn {
+            background: var(--gradient);
+            color: var(--white);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(72, 61, 139, 0.3);
+            margin: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(72, 61, 139, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .caption {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin: 15px 0 30px;
+            animation: fadeIn 1.5s ease;
+        }
+        
+        .yoga-posture {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.6s ease forwards;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .yoga-posture:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .yoga-posture h2 {
+            color: var(--primary);
+            margin-top: 0;
+            border-bottom: 2px solid var(--light-purple);
+            padding-bottom: 10px;
+        }
+        
+        .yoga-posture p {
+            color: #555;
+            text-align: left;
+        }
+        
+        .meditation-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+        }
+        
+        .breathing-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px rgba(72, 61, 139, 0.4);
+            margin: 30px 0;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .breathing-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+        
+        .breathing-circle:hover::after {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .breathing-exercise {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .breathing-timer {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        
+        .breathing-instruction {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin: 10px 0;
+            min-height: 40px;
+            text-align: center;
+        }
+        
+        .breathing-progress {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(var(--secondary) 0%, var(--light-purple) 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .breathing-progress::before {
+            content: '';
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: var(--white);
+        }
+        
+        .breathing-count {
+            position: relative;
+            z-index: 2;
+            font-size: 3rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        @keyframes breathe {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(72, 61, 139, 0.5);
+            }
+            100% {
+                transform: scale(1.2);
+                box-shadow: 0 0 30px rgba(72, 61, 139, 0.8);
+            }
+        }
+        
+        .breathe-in {
+            animation: breathe 4s forwards;
+        }
+        
+        .breathe-out {
+            animation: breathe 4s forwards reverse;
+        }
+        
+        .breathe-hold {
+            animation: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+        .delay-5 { animation-delay: 1.0s; }
+        
+        .page-transition {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .pose-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .pose-image:hover {
+            transform: scale(1.03);
+        }
+        
+        .single-pose {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .single-pose h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .single-pose p {
+            color: #555;
+            margin-bottom: 20px;
+            text-align: left;
+            line-height: 1.8;
+        }
+        
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 20px;
+        }
+        
+        .progress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--light-purple);
+            margin: 0 5px;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        
+        .progress-dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+        }
+        
+        .home-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: var(--primary);
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .home-icon:hover {
+            transform: scale(1.2);
+        }
+        
+        .welcome-animation {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+        }
+        
+        .welcome-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--gradient);
+            opacity: 0.8;
+            animation: pulse 2s infinite alternate;
+        }
+        
+        .welcome-circle:nth-child(2) {
+            animation-delay: 0.5s;
+            transform: scale(0.8);
+        }
+        
+        .welcome-circle:nth-child(3) {
+            animation-delay: 1s;
+            transform: scale(0.6);
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="main-container">
+        <header>
+            <h1>Wellness Journey</h1>
+            <p class="caption">Begin your path to mindfulness and physical well-being</p>
+        </header>
+        
+        <div class="welcome-animation">
+            <div class="welcome-circle"></div>
+            <div class="welcome-circle"></div>
+            <div class="welcome-circle"></div>
+        </div>
+        
+        <button id="exercisesButton" class="btn">Start Your Journey</button>
+    </div>
+
+    <script>
+        // Helper function to create page transitions
+        function changePage(content) {
+            const container = document.getElementById('main-container');
+            container.style.opacity = 0;
+            
+            setTimeout(() => {
+                container.innerHTML = content;
+                container.style.opacity = 1;
+            }, 300);
+        }
+        
+        // Function to go back to home
+        function goHome() {
+            location.reload();
+        }
+        
+        // Breathing exercise function
+        function startBreathingExercise() {
+            let totalTime = 180; // 3 minutes
+            let breathCount = 0;
+            let currentPhase = 'idle';
+            const phases = ['inhale', 'hold', 'exhale', 'pause'];
+            const durations = [4, 4, 6, 2]; // in seconds
+            let phaseIndex = 0;
+            let phaseTime = 0;
+            
+            changePage(`
+                <div class="home-icon" onclick="goHome()">🏠</div>
+                <header class="page-transition">
+                    <h1>Breathing Exercise</h1>
+                    <p class="caption">Follow the rhythm for deep relaxation</p>
+                </header>
+                
+                <div class="breathing-exercise">
+                    <div class="breathing-timer">03:00</div>
+                    <div class="breathing-instruction">Click Start to begin</div>
+                    <div class="breathing-progress">
+                        <div class="breathing-count">0</div>
+                    </div>
+                    <button id="startBreathingButton" class="btn">Start</button>
+                    <button id="homeButton" class="btn">Back to Home</button>
+                </div>
+            `);
+            
+            setTimeout(() => {
+                const startButton = document.getElementById('startBreathingButton');
+                const homeButton = document.getElementById('homeButton');
+                const timerElement = document.querySelector('.breathing-timer');
+                const instructionElement = document.querySelector('.breathing-instruction');
+                const breathingProgress = document.querySelector('.breathing-progress');
+                const breathingCount = document.querySelector('.breathing-count');
+                
+                homeButton.addEventListener('click', goHome);
+                
+                startButton.addEventListener('click', function() {
+                    startButton.style.display = 'none';
+                    currentPhase = phases[phaseIndex];
+                    updateInstruction(currentPhase);
+                    
+                    const timer = setInterval(() => {
+                        totalTime--;
+                        phaseTime++;
+                        
+                        // Update timer display
+                        const minutes = Math.floor(totalTime / 60);
+                        const seconds = totalTime % 60;
+                        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                        
+                        // Update progress circle
+                        const phaseDuration = durations[phaseIndex];
+                        const progressPercentage = (phaseTime / phaseDuration) * 100;
+                        breathingProgress.style.background = `conic-gradient(var(--secondary) ${progressPercentage}%, var(--light-purple) 0%)`;
+                        
+                        // Check if current phase is complete
+                        if (phaseTime >= phaseDuration) {
+                            phaseTime = 0;
+                            phaseIndex = (phaseIndex + 1) % phases.length;
+                            
+                            // If we completed a full breath cycle
+                            if (phaseIndex === 0) {
+                                breathCount++;
+                                breathingCount.textContent = breathCount;
+                            }
+                            
+                            currentPhase = phases[phaseIndex];
+                            updateInstruction(currentPhase);
+                        }
+                        
+                        // Check if time is up
+                        if (totalTime <= 0) {
+                            clearInterval(timer);
+                            instructionElement.textContent = 'Exercise Complete!';
+                            breathingProgress.style.background = `conic-gradient(var(--secondary) 100%, var(--light-purple) 0%)`;
+                            homeButton.innerHTML = 'Continue to Yoga';
+                            homeButton.removeEventListener('click', goHome);
+                            homeButton.addEventListener('click', showTadasana);
+                        }
+                    }, 1000);
+                });
+                
+                function updateInstruction(phase) {
+                    switch(phase) {
+                        case 'inhale':
+                            instructionElement.textContent = 'Inhale deeply';
+                            breathingProgress.classList.remove('breathe-out', 'breathe-hold');
+                            breathingProgress.classList.add('breathe-in');
+                            break;
+                        case 'hold':
+                            instructionElement.textContent = 'Hold your breath';
+                            breathingProgress.classList.remove('breathe-in', 'breathe-out');
+                            breathingProgress.classList.add('breathe-hold');
+                            break;
+                        case 'exhale':
+                            instructionElement.textContent = 'Exhale slowly';
+                            breathingProgress.classList.remove('breathe-in', 'breathe-hold');
+                            breathingProgress.classList.add('breathe-out');
+                            break;
+                        case 'pause':
+                            instructionElement.textContent = 'Pause';
+                            breathingProgress.classList.remove('breathe-in', 'breathe-out');
+                            breathingProgress.classList.add('breathe-hold');
+                            break;
+                    }
+                }
+            }, 500);
+        }
+        
+        document.getElementById('exercisesButton').addEventListener('click', function() {
+            changePage(`
+                <header class="page-transition">
+                    <h1>Meditation</h1>
+                    <p class="caption">Take a moment to reflect and breathe.</p>
+                </header>
+                
+                <div class="meditation-content">
+                    <div class="breathing-circle" id="breathingCircle">Breathe</div>
+                    <p>Click on the circle to start a guided breathing exercise</p>
+                </div>
+                
+                <button id="nextButton" class="btn">Continue to Yoga</button>
+            `);
+            
+            setTimeout(() => {
+                document.getElementById('breathingCircle').addEventListener('click', startBreathingExercise);
+                document.getElementById('nextButton').addEventListener('click', showTadasana);
+            }, 500);
+        });
+        
+        function showTadasana() {
+            changePage(`
+                <div class="home-icon" onclick="goHome()">🏠</div>
+                <header class="page-transition">
+                    <h1>Yoga Postures</h1>
+                    <p class="caption">Find your balance and inner peace.</p>
+                </header>
+                
+                <div class="progress-indicator">
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                </div>
+                
+                <div class="single-pose">
+                    <h2>Tadasana (Mountain Pose)</h2>
+                    <img src="pic 1.jpg" alt="Tadasana (Mountain Pose)" class="pose-image">
+                    <p>Stand tall with feet together, grounding through your feet. Engage your core and lengthen your spine. Arms at your sides, palms facing forward. Focus on your posture and breath.</p>
+                    <button id="nextPoseButton" class="btn">Next Pose</button>
+                </div>
+            `);
+            
+            setTimeout(() => {
+                document.getElementById('nextPoseButton').addEventListener('click', showVrikshasana);
+            }, 500);
+        }
+        
+        function showVrikshasana() {
+            changePage(`
+                <div class="home-icon" onclick="goHome()">🏠</div>
+                <header class="page-transition">
+                    <h1>Yoga Postures</h1>
+                    <p class="caption">Find your balance and inner peace.</p>
+                </header>
+                
+                <div class="progress-indicator">
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                </div>
+                
+                <div class="single-pose">
+                    <h2>Vrikshasana (Tree Pose)</h2>
+                    <img src="pic2.jpg" alt="Vrikshasana (Tree Pose)" class="pose-image">
+                    <p>Stand on one leg. Place the sole of your other foot on your inner thigh or calf (avoid the knee). Bring your hands to your heart center or raise them overhead. Focus on a point in front of you for balance.</p>
+                    <button id="nextPoseButton" class="btn">Next Pose</button>
+                </div>
+            `);
+            
+            setTimeout(() => {
+                document.getElementById('nextPoseButton').addEventListener('click', showBalasana);
+            }, 500);
+        }
+        
+        function showBalasana() {
+            changePage(`
+                <div class="home-icon" onclick="goHome()">🏠</div>
+                <header class="page-transition">
+                    <h1>Yoga Postures</h1>
+                    <p class="caption">Find your balance and inner peace.</p>
+                </header>
+                
+                <div class="progress-indicator">
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                </div>
+                
+                <div class="single-pose">
+                    <h2>Balasana (Child's Pose)</h2>
+                    <img src="pic3.jpg" alt="Balasana (Child's Pose)" class="pose-image">
+                    <p>Kneel on the floor, big toes touching. Sit back on your heels (or as close as you can). Fold forward, resting your forehead on the floor. Extend your arms forward or rest them alongside your body. Relax and breathe deeply.</p>
+                    <button id="nextPoseButton" class="btn">Next Pose</button>
+                </div>
+            `);
+            
+            setTimeout(() => {
+                document.getElementById('nextPoseButton').addEventListener('click', showSetuBandhasana);
+            }, 500);
+        }
+        
+        function showSetuBandhasana() {
+            changePage(`
+                <div class="home-icon" onclick="goHome()">🏠</div>
+                <header class="page-transition">
+                    <h1>Yoga Postures</h1>
+                    <p class="caption">Find your balance and inner peace.</p>
+                </header>
+                
+                <div class="progress-indicator">
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                </div>
+                
+                <div class="single-pose">
+                    <h2>Setu Bandhasana (Bridge Pose)</h2>
+                    <img src="pic4.jpg" alt="Setu Bandhasana (Bridge Pose)" class="pose-image">
+                    <p>Lie on your back with knees bent and feet flat on the floor. Press your feet and arms into the floor and lift your hips. You can clasp your hands underneath your back. Lower slowly.</p>
+                    <button id="nextPoseButton" class="btn">Next Pose</button>
+                </div>
+            `);
+            
+            setTimeout(() => {
+                document.getElementById('nextPoseButton').addEventListener('click', showSavasana);
+            }, 500);
+        }
+        
+        function showSavasana() {
+            changePage(`
+                <div class="home-icon" onclick="goHome()">🏠</div>
+                <header class="page-transition">
+                    <h1>Yoga Postures</h1>
+                    <p class="caption">Find your balance and inner peace.</p>
+                </header>
+                
+                <div class="progress-indicator">
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot active"></div>
+                </div>
+                
+                <div class="single-pose">
+                    <h2>Savasana (Corpse Pose)</h2>
+                    <img src="pic5.jpg" alt="Savasana (Corpse Pose)" class="pose-image">
+                    <p>Lie flat on your back with legs slightly apart and arms relaxed at your sides, palms facing up. Close your eyes and focus on completely relaxing every part of your body. Allow your breath to be natural and effortless.</p>
+                    <button id="completeButton" class="btn">Complete Journey</button>
+                </div>
+            `);
+            
+            setTimeout(() => {
+                document.getElementById('completeButton').addEventListener('click', showCompletion);
+            }, 500);
+        }
+        
+        function showCompletion() {
+            changePage(`
+                <header class="page-transition">
+                    <h1>Journey Complete</h1>
+                    <p class="caption">Congratulations on completing your wellness session!</p>
+                </header>
+                
+                <div class="welcome-animation">
+                    <div class="welcome-circle"></div>
+                    <div class="welcome-circle"></div>
+                    <div class="welcome-circle"></div>
+                </div>
+                
+                <p style="text-align: center; margin: 20px 0;">Take a moment to notice how you feel. Carry this energy with you throughout your day.</p>
+                
+                <button id="backToStartButton" class="btn">Back to Home</button>
+            `);
+            
+            setTimeout(() => {
+                document.getElementById('backToStartButton').addEventListener('click', goHome);
+            }, 500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Sign In</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color:#994caf ;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4c59af;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #a04580;
+        }
+        .success-message {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            border-radius: 4px;
+            color: #3c763d;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Sign In</h1>
+        <form id="userForm">
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail (Optional)</label>
+                <input type="email" id="email">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="age">Age *</label>
+                <input type="number" id="age" required min="1" max="120">
+            </div>
+            <div class="form-group">
+                <label for="profession">Profession *</label>
+                <input type="text" id="profession" required>
+            </div>
+            <button type="submit">Sign In</button>
+        </form>
+        <div id="successMessage" class="success-message">
+            User registered successfully!
+        </div>
+    </div>
+
+    <script>
+        // Initialize the database
+        let db;
+        const DB_NAME = 'UserDatabase';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'users';
+
+        // Open database connection
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        // Handle database creation/upgrade
+        request.onupgradeneeded = function(event) {
+            db = event.target.result;
+            
+            // Create object store for users if it doesn't exist
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                const objectStore = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                
+                // Create indexes for searching
+                objectStore.createIndex('name', 'name', { unique: false });
+                objectStore.createIndex('email', 'email', { unique: false });
+                objectStore.createIndex('phone', 'phone', { unique: false });
+            }
+        };
+
+        // Handle successful database connection
+        request.onsuccess = function(event) {
+            db = event.target.result;
+            console.log('Database connection opened successfully');
+        };
+
+        // Handle database connection errors
+        request.onerror = function(event) {
+            console.error('Database connection error:', event.target.error);
+            alert('Failed to connect to the database. Please try again later.');
+        };
+
+        // Form submission handler
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const age = document.getElementById('age').value;
+            const profession = document.getElementById('profession').value;
+            
+            // Create user object
+            const user = {
+                name: name,
+                email: email,
+                phone: phone,
+                age: parseInt(age),
+                profession: profession,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Save to IndexedDB
+            saveUserToDatabase(user);
+        });
+        
+        // Function to save user to database
+        function saveUserToDatabase(user) {
+            // Check if database is available
+            if (!db) {
+                alert('Database not available. Please try again later.');
+                return;
+            }
+            
+            // Start transaction
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            
+            // Get object store
+            const objectStore = transaction.objectStore(STORE_NAME);
+            
+            // Add user to database
+            const request = objectStore.add(user);
+            
+            // Handle successful save
+            request.onsuccess = function() {
+                console.log('User saved to database');
+                
+                // Reset form
+                document.getElementById('userForm').reset();
+                
+                // Show success message
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+                
+                // Hide success message after 3 seconds
+                setTimeout(function() {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            };
+            
+            // Handle errors
+            request.onerror = function(event) {
+                console.error('Error saving user to database:', event.target.error);
+                alert('Failed to save user information. Please try again.');
+            };
+        }
+        
+        // Additional functions for database maintenance
+        function backupDatabaseToServer() {
+            // This function would typically send data to a server
+            // Implementation would depend on your backend setup
+            console.log('Database backup function placeholder');
+        }
+        
+        // Optional: Periodic backup (once per day)
+        const BACKUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
+        setInterval(backupDatabaseToServer, BACKUP_INTERVAL);
+    </script>
+</body>
+</html>

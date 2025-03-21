@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Tic-Tac-Toe</title>
+    <style>
+        body {
+            text-align: center;
+            background: #000;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: white;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(32, 12, 64, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%);
+            z-index: -2;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            z-index: -1;
+            animation: twinkle 4s infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        .game-container {
+            position: relative;
+            background-color: rgba(20, 20, 40, 0.7);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.7);
+            max-width: 90%;
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #c5a0ff;
+            text-shadow: 0 0 10px #8a2be2;
+            margin-bottom: 30px;
+        }
+
+        .game-board {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+            background-color: rgba(65, 25, 130, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: rgba(30, 30, 60, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #c5a0ff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
+            cursor: pointer;
+            transition: 0.3s;
+            text-shadow: 0 0 10px #8a2be2;
+        }
+
+        .cell:hover {
+            background: rgba(60, 60, 100, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.8);
+        }
+
+        .status {
+            font-size: 1.5rem;
+            margin: 15px 0;
+            height: 30px;
+            color: #c5a0ff;
+        }
+
+        button {
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            border: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: white;
+            margin-top: 20px;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.8);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 10px rgba(138, 43, 226, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(138, 43, 226, 1); }
+            100% { transform: scale(1); box-shadow: 0 0 10px rgba(138, 43, 226, 0.7); }
+        }
+
+        @keyframes sparkle {
+            0% { box-shadow: 0 0 10px #8a2be2; }
+            50% { box-shadow: 0 0 25px #c5a0ff; }
+            100% { box-shadow: 0 0 10px #8a2be2; }
+        }
+
+        .winning-cell {
+            animation: sparkle 1.5s infinite;
+            background: rgba(80, 50, 120, 0.8);
+        }
+
+        .player-mark {
+            color: #f5c542;
+        }
+
+        .bot-mark {
+            color: #5ab9ea;
+        }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 600px) {
+            .board {
+                grid-template-columns: repeat(3, 80px);
+                grid-template-rows: repeat(3, 80px);
+                gap: 8px;
+            }
+            
+            .cell {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .board {
+                grid-template-columns: repeat(3, 70px);
+                grid-template-rows: repeat(3, 70px);
+                gap: 5px;
+            }
+            
+            .cell {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Cosmic Tic-Tac-Toe ✨</h1>
+        <div class="game-board">
+            <div class="status" id="status">Your Turn (X)</div>
+            <div class="board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+            <button id="reset-btn">New Game</button>
+        </div>
+    </div>
+
+    <script>
+        // Create stars for the galaxy background
+        function createStars() {
+            const body = document.body;
+            const numberOfStars = 150;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random position
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Random size
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Random animation delay
+                star.style.animationDelay = `${Math.random() * 4}s`;
+                
+                body.appendChild(star);
+            }
+        }
+        
+        // Game state
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let gameActive = true;
+        let playerSymbol = "X";
+        let botSymbol = "O";
+        
+        // Winning patterns
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+            [0, 4, 8], [2, 4, 6] // diagonals
+        ];
+        
+        // DOM elements
+        const statusDisplay = document.getElementById('status');
+        const cells = document.querySelectorAll('.cell');
+        const resetButton = document.getElementById('reset-btn');
+        
+        // Initialize game
+        function initGame() {
+            createStars();
+            cells.forEach(cell => {
+                cell.addEventListener('click', handleCellClick);
+            });
+            resetButton.addEventListener('click', resetGame);
+        }
+        
+        // Handle player's move
+        function handleCellClick(event) {
+            if (!gameActive) return;
+            
+            const clickedCell = event.target;
+            const cellIndex = parseInt(clickedCell.getAttribute('data-index'));
+            
+            if (board[cellIndex] !== "") return;
+            
+            // Make player's move
+            makeMove(cellIndex, playerSymbol);
+            
+            // Check if game continues
+            if (gameActive) {
+                // Bot's turn after a slight delay
+                setTimeout(() => {
+                    makeBotMove();
+                }, 500);
+            }
+        }
+        
+        // Make a move (player or bot)
+        function makeMove(index, symbol) {
+            board[index] = symbol;
+            const cell = document.querySelector(`[data-index="${index}"]`);
+            cell.textContent = symbol;
+            cell.classList.add(symbol === playerSymbol ? 'player-mark' : 'bot-mark');
+            
+            if (checkWin(symbol)) {
+                gameActive = false;
+                statusDisplay.textContent = symbol === playerSymbol ? 
+                    "You Win! 🎉" : "Bot Wins! 🤖";
+                return;
+            }
+            
+            if (!board.includes("")) {
+                gameActive = false;
+                statusDisplay.textContent = "It's a Draw! 🌌";
+                return;
+            }
+            
+            statusDisplay.textContent = symbol === playerSymbol ? 
+                "Bot's Turn (O)" : "Your Turn (X)";
+        }
+        
+        // Bot move logic
+        function makeBotMove() {
+            if (!gameActive) return;
+            
+            // Check if bot can win
+            const winMove = findBestMove(botSymbol);
+            if (winMove !== -1) {
+                makeMove(winMove, botSymbol);
+                return;
+            }
+            
+            // Block player's win
+            const blockMove = findBestMove(playerSymbol);
+            if (blockMove !== -1) {
+                makeMove(blockMove, botSymbol);
+                return;
+            }
+            
+            // Take center if available
+            if (board[4] === "") {
+                makeMove(4, botSymbol);
+                return;
+            }
+            
+            // Take a corner
+            const corners = [0, 2, 6, 8].filter(idx => board[idx] === "");
+            if (corners.length > 0) {
+                const randomCorner = corners[Math.floor(Math.random() * corners.length)];
+                makeMove(randomCorner, botSymbol);
+                return;
+            }
+            
+            // Take any available cell
+            const availableCells = board.map((cell, index) => cell === "" ? index : null)
+                .filter(idx => idx !== null);
+            
+            if (availableCells.length > 0) {
+                const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
+                makeMove(randomCell, botSymbol);
+            }
+        }
+        
+        // Find a winning or blocking move
+        function findBestMove(symbol) {
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                // Check if we can complete a line
+                if (board[a] === symbol && board[b] === symbol && board[c] === "") return c;
+                if (board[a] === symbol && board[c] === symbol && board[b] === "") return b;
+                if (board[b] === symbol && board[c] === symbol && board[a] === "") return a;
+            }
+            return -1;
+        }
+        
+        // Check if a player has won
+        function checkWin(symbol) {
+            return winPatterns.some(pattern => {
+                const [a, b, c] = pattern;
+                if (board[a] === symbol && board[b] === symbol && board[c] === symbol) {
+                    // Highlight winning cells
+                    document.querySelector(`[data-index="${a}"]`).classList.add('winning-cell');
+                    document.querySelector(`[data-index="${b}"]`).classList.add('winning-cell');
+                    document.querySelector(`[data-index="${c}"]`).classList.add('winning-cell');
+                    return true;
+                }
+                return false;
+            });
+        }
+        
+        // Reset the game
+        function resetGame() {
+            board = ["", "", "", "", "", "", "", "", ""];
+            gameActive = true;
+            
+            statusDisplay.textContent = "Your Turn (X)";
+            
+            cells.forEach(cell => {
+                cell.textContent = "";
+                cell.classList.remove('winning-cell', 'player-mark', 'bot-mark');
+            });
+        }
+        
+        // Initialize the game when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

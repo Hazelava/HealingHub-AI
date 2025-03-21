@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Riddles</title>
+    <style>
+        :root {
+            --purple-primary: #6A5ACD;
+            --purple-secondary: #9370DB;
+            --blue-accent: #4169E1;
+            --white: #F9F6FF;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--purple-primary), var(--blue-accent));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial Rounded', sans-serif;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background Animations */
+        .background-animations {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* Floating Bubbles */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(1px);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            animation: float-bubble 15s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float-bubble {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Animated Shapes */
+        .shape {
+            position: absolute;
+            animation: rotate 20s linear infinite;
+            opacity: 0.2;
+        }
+
+        .shape.circle {
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .shape.square {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transform: rotate(45deg);
+        }
+
+        .shape.triangle {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 86px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Pulsating Particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(0.2);
+                opacity: 0.2;
+            }
+            50% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Shooting Stars */
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8));
+            animation: shooting 6s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes shooting {
+            0% {
+                transform: translateX(-100px) translateY(100px) rotate(45deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            20% {
+                transform: translateX(calc(100vw + 100px)) translateY(calc(-100vh - 100px)) rotate(45deg);
+                opacity: 0;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Neural Network Connections */
+        .neural-connection {
+            position: absolute;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            animation: pulse-connection 3s infinite;
+            transform-origin: left center;
+        }
+
+        @keyframes pulse-connection {
+            0%, 100% {
+                opacity: 0.1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-width: 600px;
+            width: 100%;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: var(--purple-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .riddle-box {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #riddle-text {
+            font-size: 1.4em;
+            color: var(--purple-primary);
+            line-height: 1.6;
+            margin: 0 0 2rem 0;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .button {
+            background: var(--purple-secondary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .button:hover {
+            background: var(--blue-accent);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        #answer {
+            max-height: 0;
+            overflow: hidden;
+            color: var(--purple-primary);
+            font-weight: bold;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .show-answer #answer {
+            max-height: 200px;
+            margin-top: 1rem;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animations">
+        <!-- Bubbles -->
+        <div class="bubble" style="width: 30px; height: 30px; left: 10%; animation-duration: 12s;"></div>
+        <div class="bubble" style="width: 20px; height: 20px; left: 20%; animation-duration: 15s; animation-delay: 2s;"></div>
+        <div class="bubble" style="width: 40px; height: 40px; left: 30%; animation-duration: 10s; animation-delay: 1s;"></div>
+        <div class="bubble" style="width: 25px; height: 25px; left: 40%; animation-duration: 14s; animation-delay: 3s;"></div>
+        <div class="bubble" style="width: 35px; height: 35px; left: 70%; animation-duration: 11s; animation-delay: 0s;"></div>
+        <div class="bubble" style="width: 15px; height: 15px; left: 80%; animation-duration: 16s; animation-delay: 4s;"></div>
+        <div class="bubble" style="width: 45px; height: 45px; left: 90%; animation-duration: 13s; animation-delay: 2s;"></div>
+        
+        <!-- Shapes -->
+        <div class="shape circle" style="width: 100px; height: 100px; left: 15%; top: 20%; animation-duration: 30s;"></div>
+        <div class="shape square" style="width: 80px; height: 80px; right: 10%; top: 60%; animation-duration: 25s; animation-direction: reverse;"></div>
+        <div class="shape triangle" style="left: 75%; top: 15%; animation-duration: 35s;"></div>
+        <div class="shape circle" style="width: 150px; height: 150px; left: 40%; top: 80%; animation-duration: 40s;"></div>
+        
+        <!-- Particles -->
+        <div class="particle" style="width: 4px; height: 4px; left: 10%; top: 30%; animation-delay: 0s;"></div>
+        <div class="particle" style="width: 6px; height: 6px; left: 25%; top: 60%; animation-delay: 1s;"></div>
+        <div class="particle" style="width: 3px; height: 3px; left: 45%; top: 20%; animation-delay: 2s;"></div>
+        <div class="particle" style="width: 5px; height: 5px; left: 65%; top: 70%; animation-delay: 3s;"></div>
+        <div class="particle" style="width: 4px; height: 4px; left: 80%; top: 40%; animation-delay: 4s;"></div>
+        <div class="particle" style="width: 3px; height: 3px; left: 90%; top: 10%; animation-delay: 5s;"></div>
+        
+        <!-- Shooting Stars -->
+        <div class="shooting-star" style="top: 20%; animation-delay: 0s;"></div>
+        <div class="shooting-star" style="top: 40%; animation-delay: 3s;"></div>
+        <div class="shooting-star" style="top: 60%; animation-delay: 6s;"></div>
+        <div class="shooting-star" style="top: 80%; animation-delay: 9s;"></div>
+        
+        <!-- Neural Network Connections -->
+        <div class="neural-connection" style="width: 200px; top: 10%; left: 10%; transform: rotate(30deg);"></div>
+        <div class="neural-connection" style="width: 150px; top: 30%; left: 20%; transform: rotate(-20deg);"></div>
+        <div class="neural-connection" style="width: 180px; top: 50%; left: 50%; transform: rotate(45deg);"></div>
+        <div class="neural-connection" style="width: 120px; top: 70%; left: 70%; transform: rotate(-60deg);"></div>
+        <div class="neural-connection" style="width: 250px; top: 90%; left: 30%; transform: rotate(15deg);"></div>
+    </div>
+
+    <div class="container floating">
+        <h1>🧠 Riddles</h1>
+        <div class="riddle-box">
+            <p id="riddle-text">What has keys but can't open locks?</p>
+            <div id="answer">A piano</div>
+        </div>
+        <div class="buttons-container">
+            <button class="button" id="show-answer">Reveal Answer</button>
+            <button class="button" id="next-riddle">Next Riddle ➔</button>
+        </div>
+    </div>
+
+    <script>
+        const riddles = [
+            {
+                question: "What has cities but no houses, forests but no trees, and water but no fish?",
+                answer: "A map"
+            },
+            {
+                question: "What comes once in a minute, twice in a moment, but never in a thousand years?",
+                answer: "The letter 'M'"
+            },
+            {
+                question: "What has a heart that doesn't beat?",
+                answer: "An artichoke"
+            },
+            {
+                question: "What has keys but can't open locks?",
+                answer: "A piano"
+            },
+            {
+                question: "I'm tall when I'm young, and short when I'm old. What am I?",
+                answer: "A candle"
+            },
+            {
+                question: "What can travel around the world while staying in a corner?",
+                answer: "A stamp"
+            }
+        ];
+
+        const riddleText = document.getElementById('riddle-text');
+        const answerElement = document.getElementById('answer');
+        const showAnswerBtn = document.getElementById('show-answer');
+        const nextRiddleBtn = document.getElementById('next-riddle');
+        let currentRiddle = 0;
+
+        function updateRiddle() {
+            riddleText.style.opacity = 0;
+            setTimeout(() => {
+                riddleText.textContent = riddles[currentRiddle].question;
+                answerElement.textContent = riddles[currentRiddle].answer;
+                riddleText.style.opacity = 1;
+                answerElement.parentElement.classList.remove('show-answer');
+                showAnswerBtn.textContent = "Reveal Answer";
+            }, 300);
+        }
+
+        showAnswerBtn.addEventListener('click', () => {
+            const isShowingAnswer = answerElement.parentElement.classList.toggle('show-answer');
+            showAnswerBtn.textContent = isShowingAnswer ? "Hide Answer" : "Reveal Answer";
+        });
+
+        nextRiddleBtn.addEventListener('click', () => {
+            currentRiddle = (currentRiddle + 1) % riddles.length;
+            updateRiddle();
+        });
+
+        // Initial riddle load
+        updateRiddle();
+    </script>
+</body>
+</html>

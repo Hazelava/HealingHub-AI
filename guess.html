@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Word Game</title>
+    <style>
+        :root {
+            --deep-purple: #36086f;
+            --medium-purple: #66108b;
+            --light-purple: #aa16c5;
+            --lavender: #f5f0f6;
+            --pale-purple: #f4eef5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--deep-purple), var(--medium-purple));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .fog-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .fog-layer {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            background-image: url('https://raw.githubusercontent.com/danielstuart14/CSS_FOG_ANIMATION/master/fog1.png');
+            background-size: cover;
+            animation: fog-move 15s linear infinite;
+        }
+
+        @keyframes fog-move {
+            0% { left: 0; }
+            100% { left: -100%; }
+        }
+
+        .fog-layer:nth-child(2) {
+            animation-delay: -5s;
+            background-image: url('https://raw.githubusercontent.com/danielstuart14/CSS_FOG_ANIMATION/master/fog2.png');
+        }
+
+        .fog-layer:nth-child(3) {
+            animation-delay: -10s;
+        }
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite linear;
+            pointer-events: none;
+        }
+        
+        .square {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            animation: rotate 20s infinite linear;
+            pointer-events: none;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-20vh) translateX(10vw);
+            }
+            50% {
+                transform: translateY(-10vh) translateX(20vw);
+            }
+            75% {
+                transform: translateY(20vh) translateX(-10vw);
+            }
+            100% {
+                transform: translateY(0) translateX(0);
+            }
+        }
+        
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg) translateY(0) scale(1);
+            }
+            50% {
+                transform: rotate(180deg) translateY(-10vh) scale(1.2);
+            }
+            100% {
+                transform: rotate(360deg) translateY(0) scale(1);
+            }
+        }
+        
+        .glow {
+            position: absolute;
+            width: 40vw;
+            height: 40vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(156, 39, 176, 0.2) 0%, rgba(74, 20, 140, 0) 70%);
+            animation: pulse 8s infinite ease-in-out;
+            pointer-events: none;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.2;
+            }
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            color: var(--pale-purple);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--lavender), transparent);
+            animation: width-pulse 3s infinite ease-in-out;
+        }
+        
+        @keyframes width-pulse {
+            0%, 100% {
+                width: 100px;
+            }
+            50% {
+                width: 150px;
+            }
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .hint-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: left;
+            animation: subtle-glow 3s infinite alternate;
+        }
+        
+        @keyframes subtle-glow {
+            0% {
+                box-shadow: 0 0 10px rgba(225, 190, 231, 0.2);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(225, 190, 231, 0.4);
+            }
+        }
+        
+        .hint-title {
+            color: var(--lavender);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .hint-text {
+            font-style: italic;
+            color: var(--pale-purple);
+        }
+        
+        .word-display {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .letter {
+            width: 45px;
+            height: 55px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--lavender);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .letter.correct {
+            background-color: rgba(156, 39, 176, 0.7);
+            border-color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .letter.correct::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: white;
+            bottom: 5px;
+            left: 0;
+            animation: glitter 1.5s infinite;
+        }
+        
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        #guess-input {
+            padding: 15px;
+            border-radius: 30px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        #guess-input:focus {
+            background-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 3px var(--lavender);
+        }
+        
+        #guess-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .nav-button {
+            padding: 12px 20px;
+            background: linear-gradient(to right, var(--deep-purple), var(--medium-purple));
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        #submit-btn {
+            padding: 15px 30px;
+            background: linear-gradient(to right, var(--light-purple), var(--medium-purple));
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+        
+        #submit-btn::before, .nav-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+        
+        #submit-btn:hover::before, .nav-button:hover::before {
+            animation: button-shine 1.5s ease;
+        }
+        
+        @keyframes button-shine {
+            0% {
+                left: -50%;
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                left: 100%;
+                opacity: 0;
+            }
+        }
+        
+        #submit-btn:hover, .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        #submit-btn:active, .nav-button:active {
+            transform: translateY(0);
+        }
+        
+        .message {
+            margin-top: 20px;
+            min-height: 24px;
+            font-weight: bold;
+            color: var(--lavender);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .message.visible {
+            opacity: 1;
+        }
+        
+        .tries-left {
+            color: var(--lavender);
+        }
+        
+        .score {
+            color: var(--pale-purple);
+            font-weight: bold;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, var(--medium-purple), var(--light-purple));
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            animation: modal-glow 5s infinite linear;
+        }
+        
+        @keyframes modal-glow {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal h2 {
+            margin-bottom: 15px;
+            color: var(--pale-purple);
+        }
+        
+        .modal p {
+            margin-bottom: 25px;
+            color: white;
+        }
+        
+        .modal button {
+            padding: 12px 25px;
+            background-color: white;
+            color: var(--deep-purple);
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background-color: var(--pale-purple);
+        }
+        
+        @keyframes glitter {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .bounce {
+            animation: bounce 0.6s;
+        }
+
+        /* Confetti Animation */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .letter {
+                width: 35px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+            
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation Elements -->
+    <div class="bg-animation">
+        <div class="glow" style="top: 20%; left: 10%;"></div>
+        <div class="glow" style="top: 60%; left: 70%;"></div>
+        <div class="circle" style="top: 15%; left: 10%; width: 150px; height: 150px; animation-duration: 25s;"></div>
+        <div class="circle" style="top: 60%; left: 20%; width: 100px; height: 100px; animation-duration: 18s; animation-delay: 2s;"></div>
+        <div class="circle" style="top: 30%; left: 85%; width: 120px; height: 120px; animation-duration: 22s; animation-delay: 5s;"></div>
+        <div class="square" style="top: 15%; left: 70%; width: 80px; height: 80px; animation-duration: 30s;"></div>
+        <div class="square" style="top: 70%; left: 60%; width: 60px; height: 60px; animation-duration: 25s; animation-delay: 4s;"></div>
+    </div>
+    
+    <div class="fog-wrapper">
+        <div class="fog-layer"></div>
+        <div class="fog-layer"></div>
+        <div class="fog-layer"></div>
+    </div>
+    
+    <div class="confetti-container" id="confetti-container"></div>
+    
+    <div class="container">
+        <h1>Guess the Word</h1>
+        
+        <div class="game-info">
+            <div class="tries-left">Tries left: <span id="tries">6</span></div>
+            <div class="score">Score: <span id="score">0</span></div>
+        </div>
+        
+        <div class="hint-container">
+            <div class="hint-title">Hint:</div>
+            <div class="hint-text" id="hint">Loading hint...</div>
+        </div>
+        
+        <div class="word-display" id="word-display">
+            <!-- Letters will be generated here -->
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="guess-input" placeholder="Type your guess" maxlength="1">
+            <div class="button-group">
+                <button class="nav-button" id="prev-btn">← Previous</button>
+                <button id="submit-btn">Submit</button>
+                <button class="nav-button" id="next-btn">Next →</button>
+            </div>
+        </div>
+        
+        <div class="message" id="message"></div>
+    </div>
+    
+    <div class="modal" id="game-over-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Game Over!</h2>
+            <p id="modal-message">The word was: <span id="correct-word"></span></p>
+            <p>Your final score: <span id="final-score"></span></p>
+            <button id="play-again-btn">Play Again</button>
+        </div>
+    </div>
+    
+    <script>
+        // Create sparkles dynamically
+        function createSparkles() {
+            const bgAnimation = document.querySelector('.bg-animation');
+            const sparkleCount = 50;
+            
+            if (bgAnimation) {
+                for (let i = 0; i < sparkleCount; i++) {
+                    const sparkle = document.createElement('div');
+                    sparkle.classList.add('sparkle');
+                    
+                    // Random position
+                    const top = Math.random() * 100;
+                    const left = Math.random() * 100;
+                    sparkle.style.top = `${top}%`;
+                    sparkle.style.left = `${left}%`;
+                    
+                    // Random animation delay
+                    sparkle.style.animationDelay = `${Math.random() * 4}s`;
+                    
+                    bgAnimation.appendChild(sparkle);
+                }
+            }
+        }
+        
+        createSparkles();
+        
+        // Game data
+        const words = [
+            { word: "PURPLE", hint: "The color theme of this game" },
+            { word: "CODING", hint: "The process of creating computer software" },
+            { word: "JAVASCRIPT", hint: "A programming language commonly used for web development" },
+            { word: "ALGORITHM", hint: "A step-by-step procedure for solving a problem" },
+            { word: "ANIMATION", hint: "The process of making images appear to move" },
+            { word: "GRADIENT", hint: "A smooth transition between colors" },
+            { word: "SHADOW", hint: "A dark area where light is blocked" },
+            { word: "INTERFACE", hint: "The point where two systems meet and interact" },
+            { word: "DESIGN", hint: "The process of creating a plan or drawing to show appearance and function" },
+            { word: "PUZZLE", hint: "A game that tests ingenuity or knowledge" },
+            { word: "STYLISH", hint: "Having or showing elegance and sophistication" },
+            { word: "RAINBOW", hint: "An arch of colors visible in the sky" },
+            { word: "DIGITAL", hint: "Relating to computer technology and electronic data" },
+            { word: "CREATIVE", hint: "Having good imagination or original ideas" },
+            { word: "VIBRANT", hint: "Full of energy, brightness, and life" }
+        ];
+        
+        // Game variables
+        let currentWord = "";
+        let currentHint = "";
+        let guessedLetters = [];
+        let triesLeft = 6;
+        let score = 0;
+        let correctLettersCount = 0;
+        let currentWordIndex = 0;
+        
+        // DOM elements
+        const wordDisplay = document.getElementById("word-display");
+        const hintElement = document.getElementById("hint");
+        const triesElement = document.getElementById("tries");
+        const scoreElement = document.getElementById("score");
+        const guessInput = document.getElementById("guess-input");
+        const submitBtn = document.getElementById("submit-btn");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const messageElement = document.getElementById("message");
+        const modal = document.getElementById("game-over-modal");
+        const modalTitle = document.getElementById("modal-title");
+        const correctWordElement = document.getElementById("correct-word");
+        const finalScoreElement = document.getElementById("final-score");
+        const modalMessageElement = document.getElementById("modal-message");
+        const playAgainBtn = document.getElementById("play-again-btn");
+        const confettiContainer = document.getElementById("confetti-container");
+        
+        // Game functions
+        function initGame() {
+            // Reset game state
+            triesLeft = 6;
+            correctLettersCount = 0;
+            guessedLetters = [];
+            
+            // Set the current word
+            currentWord = words[currentWordIndex].word;
+            currentHint = words[currentWordIndex].hint;
+            
+            // Update UI
+            triesElement.textContent = triesLeft;
+            hintElement.textContent = currentHint;
+            guessInput.value = "";
+            guessInput.focus();
+            messageElement.textContent = "";
+            messageElement.classList.remove("visible");
+            
+            // Generate word display
+            renderWordDisplay();
+        }
+        
+        function renderWordDisplay() {
+            wordDisplay.innerHTML = "";
+            
+            for (let i = 0; i < currentWord.length; i++) {
+                const letter = currentWord[i];
+                const letterElement = document.createElement("div");
+                letterElement.classList.add("letter");
+                
+                if (guessedLetters.includes(letter)) {
+                    letterElement.textContent = letter;
+                    letterElement.classList.add("correct");
+                }
+                
+                wordDisplay.appendChild(letterElement);
+            }
+        }
+        
+        function checkLetter(letter) {
+            letter = letter.toUpperCase();
+            
+            // Check if letter already guessed
+            if (guessedLetters.includes(letter)) {
+                showMessage("You already guessed this letter!", "warning");
+                return;
+            }
+            
+            // Add to guessed letters
+            guessedLetters.push(letter);
+            
+            // Check if letter exists in word
+            if (currentWord.includes(letter)) {
+                // Count how many times the letter appears
+                let instances = 0;
+                for (let i = 0; i < currentWord.length; i++) {
+                    if (currentWord[i] === letter) {
+                        instances++;
+                    }
+                }
+                
+                correctLettersCount += instances;
+                
+                // Play success animation
+                animateCorrectLetter(letter);
+                
+                // Update score
+                score += 10 * instances;
+                scoreElement.textContent = score;
+                
+                // Check if won
+                if (correctLettersCount === currentWord.length) {
+                    showMessage("Well done! You guessed the word!", "success");
+                    createConfetti();
+                    setTimeout(() => {
+                        showWinModal();
+                    }, 1500);
+                    return;
+                }
+                
+                showMessage(`Good! "${letter}" is in the word!`, "success");
+            } else {
+                // Reduce tries
+                triesLeft--;
+                triesElement.textContent = triesLeft;
+                
+                // Play error animation
+                animateError();
+                
+                showMessage(`Oops! "${letter}" is not in the word.`, "error");
+                
+                // Check if game over
+                if (triesLeft === 0) {
+                    setTimeout(() => {
+                        showGameOverModal();
+                    }, 1000);
+                }
+            }
+            
+            // Update display
+            renderWordDisplay();
+        }
+        
+        function showMessage(text, type) {
+            messageElement.textContent = text;
+            messageElement.classList.add("visible");
+            
+            // Clear message after 3 seconds
+            setTimeout(() => {
+                messageElement.classList.remove("visible");
+            }, 3000);
+        }
+        
+        function animateCorrectLetter(letter) {
+            const letterElements = document.querySelectorAll(".letter");
+            letterElements.forEach((el, index) => {
+                if (currentWord[index] === letter) {
+                    el.classList.add("bounce");
+                    setTimeout(() => {
+                        el.classList.remove("bounce");
+                    }, 600);
+                }
+            });
+        }
+        
+        function animateError() {
+            guessInput.classList.add("bounce");
+            setTimeout(() => {
+                guessInput.classList.remove("bounce");
+            }, 600);
+        }
+        
+        function createConfetti() {
+            confettiContainer.innerHTML = '';
+            
+            const colors = ['#ff7979', '#ffbe76', '#badc58', '#7ed6df', '#e056fd', '#686de0'];
+            
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // Random properties
+                const size = Math.random() * 15 + 5;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const shape = Math.random() > 0.5 ? '50%' : '0%';
+                const left = Math.random() * 100;
+                const rotate = Math.random() * 360;
+                
+                // Apply styles
+                confetti.style.width = `${size}px`;
+                confetti.style.height = `${size}px`;
+                confetti.style.backgroundColor = color;
+                confetti.style.borderRadius = shape;
+                confetti.style.left = `${left}%`;
+                confetti.style.top = '-20px';
+                confetti.style.transform = `rotate(${rotate}deg)`;
+                
+                // Animation
+                confetti.animate(
+                    [
+                        { transform: `translate(0, 0) rotate(${rotate}deg)`, opacity: 1 },
+                        { transform: `translate(${Math.random() * 200 - 100}px, ${window.innerHeight}px) rotate(${rotate + Math.random() * 360}deg)`, opacity: 0 }
+                    ],
+                    {
+                        duration: Math.random() * 3000 + 2000,
+                        easing: 'cubic-bezier(0,.99,.57,.83)',
+                        delay: Math.random() * 2000
+                    }
+                );
+                
+                confettiContainer.appendChild(confetti);
+            }
+            
+            // Remove confetti after animation
+            setTimeout(() => {
+                confettiContainer.innerHTML = '';
+            }, 5000);
+        }
+        
+        function showGameOverModal() {
+            modalTitle.textContent = "Game Over!";
+            correctWordElement.textContent = currentWord;
+            finalScoreElement.textContent = score;
+            modalMessageElement.textContent = "The word was: ";
+            modalMessageElement.appendChild(correctWordElement);
+            modal.classList.add("active");
+        }
+        
+        function showWinModal() {
+            modalTitle.textContent = "Congratulations!";
+            correctWordElement.textContent = currentWord;
+            finalScoreElement.textContent = score;
+            modalMessageElement.textContent = "You correctly guessed: ";
+            modalMessageElement.appendChild(correctWordElement);
+            modal.classList.add("active");
+        }
+        
+        function nextWord() {
+            currentWordIndex = (currentWordIndex + 1) % words.length;
+            initGame();
+        }
+        
+        function previousWord() {
+            currentWordIndex = (currentWordIndex - 1 + words.length) % words.length;
+            initGame();
+        }
+        
+        // Event listeners
+        submitBtn.addEventListener("click", () => {
+            const letter = guessInput.value.trim();
+            if (letter) {
+                checkLetter(letter);
+                guessInput.value = "";
+                guessInput.focus();
+            }
+        });
+        
+        guessInput.addEventListener("keyup", (e) => {
+            if (e.key === "Enter") {
+                const letter = guessInput.value.trim();
+                if (letter) {
+                    checkLetter(letter);
+                    guessInput.value = "";
+                }
+            }
+        });
+        
+        playAgainBtn.addEventListener("click", () => {
+            modal.classList.remove("active");
+            nextWord();
+        });
+        
+        nextBtn.addEventListener("click", () => {
+            nextWord();
+        });
+        
+        prevBtn.addEventListener("click", () => {
+            previousWord();
+        });
+        
+        // Initialize game
+        initGame();
+    </script>
+</body>
+</html>

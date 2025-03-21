@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tune In</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #a6c0fe, #f68084);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: linear-gradient(to bottom right, #f1f5ff, #e6e9ff);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #5e60ce;
+            margin-bottom: 40px;
+            font-size: 3.2rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+        }
+        
+        .mood-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .mood-button {
+            padding: 15px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.5px;
+        }
+        
+        .mood-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mood-button:active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.12);
+        }
+        
+        .Happy {
+            background: linear-gradient(to right, #ffd700, #ffaa00);
+            color: #333;
+        }
+        
+        .Sad {
+            background: linear-gradient(to right, #6495ED, #4169E1);
+            color: white;
+        }
+        
+        .Energetic {
+            background: linear-gradient(to right, #FF4500, #FF7700);
+            color: white;
+        }
+        
+        .Relaxed {
+            background: linear-gradient(to right, #98FB98, #7CFC00);
+            color: #333;
+        }
+        
+        .Focus {
+            background: linear-gradient(to right, #9370DB, #8A2BE2);
+            color: white;
+        }
+        
+        .player-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(5px);
+        }
+        
+        .now-playing {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #5e60ce;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        audio {
+            width: 100%;
+            height: 50px;
+            border-radius: 50px;
+        }
+        
+        audio::-webkit-media-controls-panel {
+            background-color: #e6e9ff;
+        }
+        
+        audio::-webkit-media-controls-play-button {
+            background-color: #5e60ce;
+            border-radius: 50%;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 500px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+                margin-bottom: 30px;
+            }
+            
+            .mood-button {
+                padding: 12px 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tune In🎵</h1>
+        <div class="mood-buttons">
+            <button class="mood-button Happy" onclick="playRandomMusic('Happy')">Happy</button>
+            <button class="mood-button Sad" onclick="playRandomMusic('Sad')">Sad</button>
+            <button class="mood-button Energetic" onclick="playRandomMusic('Energetic')">Energetic</button>
+            <button class="mood-button Relaxed" onclick="playRandomMusic('Relaxed')">Relaxed</button>
+            <button class="mood-button Focus" onclick="playRandomMusic('Focus')">Focus</button>
+        </div>
+        <div class="player-container hidden" id="player-container">
+            <div class="now-playing" id="now-playing">Now Playing: </div>
+            <audio id="audio-player" controls autoplay></audio>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        const NUMBER_OF_TRACKS_PER_CATEGORY = 3; // Updated to 3 files per category
+        
+        // DOM Elements
+        const audioPlayer = document.getElementById('audio-player');
+        const playerContainer = document.getElementById('player-container');
+        const nowPlayingText = document.getElementById('now-playing');
+        
+        // Get a random number between 1 and max
+        function getRandomTrackNumber(max) {
+            return Math.floor(Math.random() * max) + 1;
+        }
+        
+        // Play random music from selected category
+        function playRandomMusic(category) {
+            // Reset any previous event listeners
+            audioPlayer.removeEventListener('ended', audioPlayer.onended);
+            
+            // Get random track number
+            const trackNumber = getRandomTrackNumber(NUMBER_OF_TRACKS_PER_CATEGORY);
+            
+            // Create file path
+            const filePath = `${category} ${trackNumber}.mp3`;
+            
+            // Set audio source
+            audioPlayer.src = filePath;
+            
+            // Show player
+            playerContainer.classList.remove('hidden');
+            
+            // Update now playing text
+            nowPlayingText.textContent = `Now Playing: ${category} - Track ${trackNumber}`;
+            
+            // Play audio
+            audioPlayer.play().catch(error => {
+                console.error('Error playing the audio:', error);
+                alert(`Could not play the audio file: ${filePath}. Make sure the file exists in the correct location.`);
+            });
+            
+            // Add event listener for track end
+            audioPlayer.onended = function() {
+                // Play another random track from the same category when the current one ends
+                playRandomMusic(category);
+            };
+        }
+        
+        // Initialize audio player
+        audioPlayer.addEventListener('error', function() {
+            alert('Error loading audio file. Please check if the file exists in the correct location.');
+        });
+    </script>
+</body>
+</html>
